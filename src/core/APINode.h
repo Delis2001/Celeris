@@ -1,5 +1,3 @@
-#pragma once
-
 #ifndef APINODE
 #define APINODE
 

@@ -8,7 +8,9 @@
 #define _WIN32_WINNT 0x501
 #endif // !_WIN32_WINNT
 
-#ifndef SocketImpl
+#ifndef SOCKET_IMPL
+
+#define SOCKET_IMPL
 
 #define Amthsocket
 
@@ -18,6 +20,7 @@
 #include <stdexcept>
 #include <WinSock2.h>
 #include <system_error>
+#include <utility>
 
 #pragma comment(lib, "Ws2_32.lib")
 
@@ -62,4 +65,4 @@ namespace AmthSocket {
 	};
 }
 
-#endif // !SocketImpl
+#endif // !SOCKET_IMPL

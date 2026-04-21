@@ -1,4 +1,6 @@
-#pragma once
+#ifndef AST_FACTORY
+#define AST_FACTORY
+
 #include <unordered_map>
 #include <memory>
 #include <functional>
@@ -34,3 +36,4 @@ private:
     std::unordered_map<std::string, CreatorFunc> registry;
     ASTNodeFactory() = default; // Private constructor for singleton pattern
 };
+#endif //!AST_FACTORY
