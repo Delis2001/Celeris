@@ -59,11 +59,14 @@ int main(int argc, char** argv) {
 	std::filesystem::path htmlPath = currentPath / html_text;
 
 	[[maybe_unused]]auto rootNode = ASTManager::getInstance().buildTree(htmlPath);
+	std::cout << "Built Tree..." << std::endl;
 
-	Logger log{};
+	//Logger log{};
 
-	log.startLoggerParse(rootNode, rootNode);
-	log.PrintLogQueues();
+	//log.startLoggerParse(rootNode, rootNode);
+	//log.PrintLogQueues();
+
+	std::cout << "Starting server..." << std::endl;
 
 	CelProcess::getInstance().beginprocess();
 }

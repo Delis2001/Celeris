@@ -1,10 +1,11 @@
 #include "util/decisions/ifDecTree.h"
 #include "ast/ast.h"
+#include "ast/ast_manager.h"
 #include <vector>
 #include <sstream>
 #include <algorithm>
 
-std::vector<std::string> tokenize(const std::string& expr) {
+std::vector<std::string> ifDecTree::tokenize(const std::string& expr) {
     std::vector<std::string> tokens;
     std::string token;
     bool in_quote = false;
@@ -43,7 +44,7 @@ std::vector<std::string> tokenize(const std::string& expr) {
     return tokens;
 }
 
-std::vector<std::string> split(const std::string& s, char delim) {
+std::vector<std::string> ifDecTree::split(const std::string& s, char delim) const {
     std::vector<std::string> res;
     std::stringstream ss(s);
     std::string item;
@@ -53,23 +54,15 @@ std::vector<std::string> split(const std::string& s, char delim) {
     return res;
 }
 
-ASTreeNode* findNode(ASTreeNode* root, const std::string& tag, const std::string& name = "") {
-    if (root->getTag() == tag && (name.empty() || root->getAttribute("name") == name)) return root;
-    for (auto& child : root->GetChildren()) {
-        auto f = findNode(child.get(), tag, name);
-        if (f) return f;
-    }
-    return nullptr;
-}
-
-std::string resolve(decNode* node, ASTreeNode* root) {
+std::string ifDecTree::resolve(decNode* node) const {
     std::string path = node->value;
     auto parts = split(path, '.');
-    ASTreeNode* found = nullptr;
+    std::shared_ptr<ASTreeNode> found = nullptr;
+
     if (parts.size() == 2) {
-        found = findNode(root, parts[0]);
+        found = ASTManager::findNodeWithTagName(parts[0], nullptr);
     } else if (parts.size() == 3) {
-        found = findNode(root, parts[0], parts[1]);
+        found = ASTManager::findNodeWithTagandName(parts[0], parts[1], nullptr);
     }
     if (found) {
         return found->getAttribute(parts.back());
@@ -77,28 +70,23 @@ std::string resolve(decNode* node, ASTreeNode* root) {
     return "";
 }
 
-bool eval_decnode(decNode* node, ASTreeNode* root) {
+bool ifDecTree::eval_decnode(decNode* node) const {
     if (!node) return true;
     switch (node->type) {
         case OPS::EQ:
-            return resolve(node->left, root) == resolve(node->right, root);
+            return resolve(node->left) == resolve(node->right);
         case OPS::NEQ:
-            return resolve(node->left, root) != resolve(node->right, root);
+            return resolve(node->left) != resolve(node->right);
         case OPS::AND:
-            return eval_decnode(node->left, root) && eval_decnode(node->right, root);
+            return eval_decnode(node->left) && eval_decnode(node->right);
         case OPS::OR:
-            return eval_decnode(node->left, root) || eval_decnode(node->right, root);
+            return eval_decnode(node->left) || eval_decnode(node->right);
         default:
             return false;
     }
 }
 
-decNode* parse_or(const std::vector<std::string>& tokens, int& i);
-decNode* parse_and(const std::vector<std::string>& tokens, int& i);
-decNode* parse_eq(const std::vector<std::string>& tokens, int& i);
-decNode* parse_base(const std::vector<std::string>& tokens, int& i);
-
-decNode* parse_or(const std::vector<std::string>& tokens, int& i) {
+decNode* ifDecTree::parse_or(const std::vector<std::string>& tokens, int& i) {
     decNode* left = parse_and(tokens, i);
     while (i < (int)tokens.size() && tokens[i] == "||") {
         i++;
@@ -111,7 +99,7 @@ decNode* parse_or(const std::vector<std::string>& tokens, int& i) {
     return left;
 }
 
-decNode* parse_and(const std::vector<std::string>& tokens, int& i) {
+decNode* ifDecTree::parse_and(const std::vector<std::string>& tokens, int& i) {
     decNode* left = parse_eq(tokens, i);
     while (i < (int)tokens.size() && tokens[i] == "&&") {
         i++;
@@ -124,7 +112,7 @@ decNode* parse_and(const std::vector<std::string>& tokens, int& i) {
     return left;
 }
 
-decNode* parse_eq(const std::vector<std::string>& tokens, int& i) {
+decNode* ifDecTree::parse_eq(const std::vector<std::string>& tokens, int& i) {
     decNode* left = parse_base(tokens, i);
     if (i < (int)tokens.size() && (tokens[i] == "==" || tokens[i] == "!=")) {
         std::string op = tokens[i];
@@ -138,7 +126,7 @@ decNode* parse_eq(const std::vector<std::string>& tokens, int& i) {
     return left;
 }
 
-decNode* parse_base(const std::vector<std::string>& tokens, int& i) {
+decNode* ifDecTree::parse_base(const std::vector<std::string>& tokens, int& i) {
     if (i >= (int)tokens.size()) return nullptr;
     decNode* node = new decNode(OPS::BASE, tokens[i]);
     i++;
@@ -146,6 +134,7 @@ decNode* parse_base(const std::vector<std::string>& tokens, int& i) {
 }
 
 /** 
+ * Start point for parsing the expression, this will be called with the raw expression from the if statement
  * Looks for the middle operator if it exists
  * 
  * then returns a data structure, containing the start and end positions of the operator 
@@ -183,6 +172,7 @@ ifDecTree::~ifDecTree(){
     // TODO: delete tree
 }
 
-bool ifDecTree::evaluate(ASTreeNode* root) const {
-    return eval_decnode(head, root);
+// evaluates the tree and returns the result
+bool ifDecTree::evaluate() const {
+    return eval_decnode(head);
 }

@@ -85,6 +85,8 @@ std::map<std::string, std::string> FileParser::parseAttributes(const std::string
         }
     }
 
+	return result;
+
 }
 
 void FileParser::parseStringTemplateLiteral(const std::string& input) {
