@@ -1,5 +1,5 @@
 
-#include "cleansocket.h"
+#include "net/cleansocket.h"
 
 CleanSocket::CleanSocket(int address_family, int sockettype, int protocol) {
 	cleanSocket = socket(address_family, sockettype, protocol);

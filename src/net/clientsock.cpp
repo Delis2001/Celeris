@@ -1,4 +1,4 @@
-#include "clientsock.h"
+#include "net/clientsock.h"
 
 AmthSocket::ClientSocket::~ClientSocket() noexcept
 {

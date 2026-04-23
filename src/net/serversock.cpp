@@ -1,4 +1,4 @@
-#include "serversock.h"
+#include "net/serversock.h"
 
 AmthSocket::ServerSocket::ServerSocket()
 {
@@ -72,6 +72,17 @@ void AmthSocket::ServerSocket::sendData(SOCKET& clientSocket, const char data[])
 	Sleep(1000);
 	shutdown(clientSocket, SD_SEND);  //shutdown the sending side of the socket
 
+}
+
+std::string AmthSocket::ServerSocket::getClientIp(SOCKET clientSocket) {
+	sockaddr_in clientAddr;
+	int addrLen = sizeof(clientAddr);
+	if (getpeername(clientSocket, (sockaddr*)&clientAddr, &addrLen) == 0) {
+		char ipStr[INET_ADDRSTRLEN];
+		inet_ntop(AF_INET, &clientAddr.sin_addr, ipStr, sizeof(ipStr));
+		return std::string(ipStr);
+	}
+	return "";
 }
 
 int AmthSocket::ServerSocket::inet_pton(int af, const char* src, void* dst)

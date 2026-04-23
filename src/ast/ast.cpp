@@ -1,17 +1,36 @@
-#include "ast.h"
+#include "ast/ast.h"
+#include <sstream>
 
+ASTreeNode::ASTreeNode() {}
+
+ASTreeNode::~ASTreeNode() {
+	//destructor to clean up children
+	for (auto& child : children) {
+		child.reset(); //reset shared_ptr to release the child node
+	}
+	children.clear();
+
+	//clear dependencies
+	for (auto& dep : dependencies) {
+		dep.reset(); //reset shared_ptr to release the dependency node
+	}
+
+	//clear raw dependencies
+	for (auto& rawdep : rawDependencies) {
+		delete rawdep; // Delete the raw dependency
+	}
+
+}
 
 void ASTreeNode::registernode(const std::string& name, const std::string& attributes, std::string& content)
 {
+    this->name = name;
 }
 
 void ASTreeNode::AddChild(std::shared_ptr<ASTreeNode> child)
 {
+	child.get()->parent = this; //set the parent of the child to this node
 	children.emplace_back(child);
-}
-
-void ASTreeNode::printMessage() {
-	std::cout << this->nodeAttributes["message"] << "\n";
 }
 
 //remove a child from the node
@@ -53,3 +72,38 @@ void ASTreeNode::addTagName(const std::string& tagname, ASTreeNode* node) {
 std::string ASTreeNode::getTagName() const noexcept {
 	return name;
 }
+
+ASTreeNode* ASTreeNode::getParent() const noexcept
+{
+	if (this->parent == nullptr) 
+		std::cerr << "Error: Parent is null for node with tag: " << this->getTagName() << std::endl;
+	return this->parent;
+}
+
+ProcessEntry* ASTreeNode::getattachable(NodeDependencies& dependencyList)
+{
+	RepProcess process = [&dependencyList]() {
+		// Default implementation does nothing
+	};
+	ProcessEntry* newEntry = new ProcessEntry(this, dependencyList, process);
+	return newEntry;
+}
+
+//TODO: Remember to move this method to a more appropriate place
+ASTreeNode* ASTreeNode::getDependency(RawDependency* rawdep) const noexcept
+{
+	for (const auto& dep : dependencies) {
+		if (dep->getTagName() == rawdep->depNodeName) {
+			if (rawdep->depName == "") return dep.get(); // Return the dependency node if it matches the node name
+			else if (rawdep->depName == dep->getTagName()) {
+				return dep.get(); // Return the dependency node if it matches
+			}
+		}
+	}
+	return nullptr; // Not found
+}
+
+std::vector<RawDependency*> ASTreeNode::getRawDependencies() const noexcept {
+	return rawDependencies; //whether dependecies are determined or not, this will return the raw dependencies
+}
+

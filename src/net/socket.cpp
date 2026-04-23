@@ -1,4 +1,4 @@
-#include "socket.hpp"
+#include "net/socket.hpp"
 
 AmthSocket::SocketImpl::SocketImpl()
 {

@@ -32,6 +32,8 @@ namespace AmthSocket
 
 			void sendData(SOCKET& clientSocket, const char data[]);
 
+			std::string getClientIp(SOCKET clientSocket);
+
 
 		private:
 			int inet_pton(int af, const char* src, void* dst);

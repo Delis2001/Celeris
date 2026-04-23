@@ -1,4 +1,4 @@
-#include "fileParser.h"
+#include "util/fileParser.h"
 #include <iostream>
 
 
@@ -39,20 +39,21 @@ bool FileParser::check_is_file(const std::string& filename) {
 
 std::map<std::string, std::string> FileParser::parseAttributes(const std::string& input) {
 	std::map<std::string, std::string> result;
-	std::regex pattern(R"((\w+)='([^']*)'|(\w+))");
-	std::smatch match;
-	std::string str = input;
-
-	while (std::regex_search(str, match, pattern)) {
-		if (match[1].matched) { // Matched key='value' pattern
-			result[match[1]] = match[2];
+	std::stringstream ss(input);
+	std::string token;
+	while (ss >> token) {
+		size_t eq = token.find('=');
+		if (eq != std::string::npos) {
+			std::string key = token.substr(0, eq);
+			std::string value = token.substr(eq + 1);
+			if (!value.empty() && value.front() == '\'' && value.back() == '\'') {
+				value = value.substr(1, value.size() - 2);
+			}
+			result[key] = value;
+		} else {
+			result[token] = ""; // standalone key
 		}
-		else if (match[3].matched) { // Matched standalone key
-			result[match[3]] = ""; // Assign empty value
-		}
-		str = match.suffix();
 	}
-
 	return result;
 }
 

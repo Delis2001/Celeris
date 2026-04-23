@@ -18,17 +18,19 @@ public:
 
 	void registernode(const std::string& name, const std::string& attributes, std::string& content);
 
-	bool startCheck();
-
 	bool beginLimit();
 
 	void addNewIpaddress(const std::string& ip_address);
 
 	void removeIpaddress(std::string& ip_address);
 
+	//void StartSynchronousLimiting();
+
 	bool isRateLimited(const std::string& ip_address);
 
 	int getIpAttempts(const std::string& ip_address);
+
+	//void startCentralResetThread();
 
 	//void startCentralResetThread();
 
@@ -38,7 +40,10 @@ private:
 
 	std::mutex attempts_mutex;
 
-	std::map<std::string, unsigned short int> ip_attempts_map;
+	//ipaddress => <attempts, last reset time>
+	std::map<std::string, std::pair<uint16_t,uint64_t>> ip_attempts_map;
+
+	std::vector<RawDependency*> rawDependencies = {};
 };
 
 #endif // !RATELIMITNODE_H

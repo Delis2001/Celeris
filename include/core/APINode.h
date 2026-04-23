@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef APINODE
 #define APINODE
 
@@ -15,7 +17,7 @@ public:
 
 private:
 	friend ASTManager;
-
+	std::vector<RawDependency*> rawDependencies = {};
 };
 
 #endif // !APINODE

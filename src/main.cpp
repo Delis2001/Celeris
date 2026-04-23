@@ -58,7 +58,7 @@ int main(int argc, char** argv) {
 
 	std::filesystem::path htmlPath = currentPath / html_text;
 
-	[[maybe_unused]]ASTreeNode* rootNode = ASTManager::getInstance().buildTree(htmlPath);
+	[[maybe_unused]]auto rootNode = ASTManager::getInstance().buildTree(htmlPath);
 
 	Logger log{};
 

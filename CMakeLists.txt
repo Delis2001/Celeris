@@ -9,33 +9,52 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 add_executable(Celeris
     src/main.cpp
 
+    # ast
     src/ast/ast.cpp
+    src/ast/ast_factory.cpp
     src/ast/ast_manager.cpp
 
+    # core
     src/core/APINode.cpp
     src/core/databaseNode.cpp
     src/core/FileSystem.cpp
+    src/core/itemNode.cpp
+    src/core/requestNode.cpp
     src/core/RatelimitNode.cpp
     src/core/RouteNode.cpp
     src/core/ServerNode.cpp
+    src/core/storeNode.cpp
+    src/core/taskNode.cpp
 
+    # db
     src/db/databaseCon.cpp
 
+    # net
     src/net/cleansocket.cpp
     src/net/clientsock.cpp
     src/net/serversock.cpp
     src/net/socket.cpp
     src/net/Socket_manager.cpp
 
+    # process
+    src/process/process.cpp
+
+    # protocols
     src/protocols/http/httprequest.cpp
 
+    # util
     src/util/fileParser.cpp
+    src/util/logger.cpp
     src/util/mimetypes.cpp
     src/util/PathResolver.cpp
+
+    # util/decisions
+    src/util/decisions/decNode.cpp
+    src/util/decisions/ifDecTree.cpp
 )
 
 target_include_directories(Celeris PRIVATE
-    ${CMAKE_SOURCE_DIR}/src
+    ${CMAKE_SOURCE_DIR}/include
 )
 
 # Link Winsock on Windows
