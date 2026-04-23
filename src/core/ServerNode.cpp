@@ -28,6 +28,7 @@ bool ServerNode::setPort(const std::string& port) noexcept {
 	if (port.find_first_not_of("0123456789") != std::string::npos) {
 		return false;
 	}
+	std::cout << "Setting port to: " << port << std::endl;
 	int minPort = std::stoi(port);
 	if (minPort < 0 || minPort > 65535) {
 		return false;

@@ -38,23 +38,53 @@ bool FileParser::check_is_file(const std::string& filename) {
 }
 
 std::map<std::string, std::string> FileParser::parseAttributes(const std::string& input) {
-	std::map<std::string, std::string> result;
-	std::stringstream ss(input);
-	std::string token;
-	while (ss >> token) {
-		size_t eq = token.find('=');
-		if (eq != std::string::npos) {
-			std::string key = token.substr(0, eq);
-			std::string value = token.substr(eq + 1);
-			if (!value.empty() && value.front() == '\'' && value.back() == '\'') {
-				value = value.substr(1, value.size() - 2);
-			}
-			result[key] = value;
-		} else {
-			result[token] = ""; // standalone key
-		}
-	}
-	return result;
+    std::map<std::string, std::string> result;
+
+    size_t pos = 0;
+    const size_t len = input.size();
+
+    while (pos < len) {
+        while (pos < len && std::isspace(static_cast<unsigned char>(input[pos]))) {
+            ++pos;
+        }
+        if (pos >= len) break;
+
+        std::string key;
+        while (pos < len && !std::isspace(static_cast<unsigned char>(input[pos])) && input[pos] != '=') {
+            key.push_back(input[pos++]);
+        }
+
+        while (pos < len && std::isspace(static_cast<unsigned char>(input[pos]))) {
+            ++pos;
+        }
+
+        std::string value;
+        if (pos < len && input[pos] == '=') {
+            ++pos;
+            while (pos < len && std::isspace(static_cast<unsigned char>(input[pos]))) {
+                ++pos;
+            }
+
+            if (pos < len && (input[pos] == '"' || input[pos] == '\'')) {
+                char quote = input[pos++];
+                while (pos < len && input[pos] != quote) {
+                    value.push_back(input[pos++]);
+                }
+                if (pos < len && input[pos] == quote) {
+                    ++pos;
+                }
+            } else {
+                while (pos < len && !std::isspace(static_cast<unsigned char>(input[pos]))) {
+                    value.push_back(input[pos++]);
+                }
+            }
+        }
+
+        if (!key.empty()) {
+            result[key] = value;
+        }
+    }
+
 }
 
 void FileParser::parseStringTemplateLiteral(const std::string& input) {
