@@ -83,6 +83,8 @@ public:
 	ASTreeNode* getDependency(RawDependency* rawdep) const noexcept;
 
 	virtual std::vector<RawDependency*> getRawDependencies() const noexcept;
+
+	virtual void subTask() const;
 private:
 
 	//use vector to store children

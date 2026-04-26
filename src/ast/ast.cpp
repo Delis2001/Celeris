@@ -107,3 +107,8 @@ std::vector<RawDependency*> ASTreeNode::getRawDependencies() const noexcept {
 	return rawDependencies; //whether dependecies are determined or not, this will return the raw dependencies
 }
 
+void ASTreeNode::subTask() const
+{
+	return;
+}
+
