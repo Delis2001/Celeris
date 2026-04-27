@@ -8,6 +8,7 @@
 #include <functional>
 #include <memory>
 #include "ast/ast.h"
+#include "platform/process_utils.h"
 
 class CelProcess
 {
@@ -26,6 +27,12 @@ public:
 
 	void printProcesses() const noexcept;
 
+	// Plugin process management
+	bool startPluginProcess(const std::string& pluginPath, const std::vector<std::string>& args = {});
+	bool stopPluginProcess(const std::string& pluginName);
+	std::vector<ProcessInfo> getPluginProcesses() const;
+	bool isPluginRunning(const std::string& pluginName) const;
+
 	static CelProcess& getInstance() noexcept {
 		static CelProcess instance;
 		return instance;
@@ -34,5 +41,8 @@ public:
 private:
 	//AstreeNode* | a list of the nodes dependencies
 	std::vector<ProcessEntry*> processNodes;
+	
+	// Plugin process tracking
+	std::vector<ProcessInfo> pluginProcesses;
 };
 #endif // !PROCESS_H
