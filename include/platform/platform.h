@@ -47,17 +47,6 @@
     } WSADATA;
 #endif
 
-// Process platform detection
-#if PLATFORM_WINDOWS
-    #include <windows.h>
-    #include <tlhelp32.h>
-    #include <processthreadsapi.h>
-#elif PLATFORM_POSIX
-    #include <sys/types.h>
-    #include <sys/wait.h>
-    #include <signal.h>
-    #include <unistd.h>
-#endif
 
 // Common utilities
 #if PLATFORM_WINDOWS

@@ -37,7 +37,7 @@ add_executable(Celeris
     src/net/Socket_manager.cpp
 
     # platform
-    src/platform/process_utils.cpp
+    src/platform/plugin_loader.cpp
 
     # process
     src/process/process.cpp
